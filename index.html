@@ -1198,6 +1198,119 @@
         #man.tremer.urgente .pgs {
             animation-duration: .12s
         }
+
+        html.mu-on,
+        html.mu-on body {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none
+        }
+
+        #mudo {
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none
+        }
+
+        @supports(height:100dvh) {
+            #mudo {
+                height: 100dvh
+            }
+        }
+
+        .modal {
+            touch-action: pan-y;
+            -webkit-user-select: auto;
+            user-select: auto
+        }
+
+        .mright {
+            overflow: hidden
+        }
+
+        .pgs {
+            perspective: 1600px;
+            perspective-origin: 20% 50%;
+            touch-action: none;
+            margin: 0 6px 6px 0
+        }
+
+        .pg {
+            padding: 0;
+            background: none;
+            box-shadow: none;
+            overflow: visible;
+            border-radius: 0;
+            transform-style: preserve-3d;
+            transition: none;
+            transform-origin: left center;
+            will-change: transform;
+            backface-visibility: visible
+        }
+
+        .pg::before {
+            display: none
+        }
+
+        .pf {
+            position: absolute;
+            inset: 0;
+            padding: .8em .8em 1.6em 2.6em;
+            border-radius: 6px 14px 14px 6px;
+            background: #fffbe9 repeating-linear-gradient(transparent 0 1.44em, #9fc5e8 1.44em 1.45em);
+            color: #222;
+            font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+            font-size: clamp(11px, min(4.4cqw, 3.2cqh), 20px);
+            line-height: 1.45;
+            text-align: left;
+            overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            box-shadow: 4px 6px 0 rgba(0, 0, 0, .4)
+        }
+
+        .pf::before {
+            content: '';
+            position: absolute;
+            left: .5em;
+            top: 0;
+            bottom: 0;
+            width: 1.4em;
+            background: radial-gradient(circle at .7em .7em, #222 .25em, transparent .3em) 0 0/1.4em 2em repeat-y
+        }
+
+        .pf::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(90deg, rgba(0, 0, 0, .45), rgba(0, 0, 0, 0) 75%);
+            opacity: var(--sh, 0)
+        }
+
+        .pb {
+            position: absolute;
+            inset: 0;
+            transform: rotateY(180deg);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 14px 6px 6px 14px;
+            background: linear-gradient(270deg, #e6dcb8, #f7f0d6 45%, #efe6c4);
+            box-shadow: -4px 6px 0 rgba(0, 0, 0, .35)
+        }
+
+        .pb::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: linear-gradient(270deg, rgba(0, 0, 0, .35), rgba(0, 0, 0, 0) 75%);
+            opacity: var(--sh, 0)
+        }
     </style>
 </head>
 
@@ -1552,31 +1665,31 @@
 
         /* ---------- tela do Mudo ---------- */
         let M = { end: 0, run: false, rem: 0 }, mt2 = 0;
-        function mdraw() { 
-            const pre = M.start && Date.now() < M.start; 
-            $('#mtm').classList.toggle('pre', !!pre); 
-            if (pre) { 
-                $('#mtm').textContent = fmt((M.start - Date.now()) / 1000); 
-                return 
-            } 
-            const rem = M.run ? Math.max(0, (M.end - Date.now()) / 1000) : M.rem; 
-            $('#mtm').textContent = fmt(rem); 
-            $('#mtm').classList.toggle('hot', M.run && rem <= 30); 
-            $('#man').classList.toggle('tremer',M.run&&rem<=30&&rem>0);
-            $('#man').classList.toggle('urgente',M.run&&rem<=10&&rem>0);
-            if (M.run && M.start && rem <= 0 && M.fx !== 'boom') { 
-                M.fx = 'boom'; boom(); fx('boom') 
-            } 
-            if (M.run && rem > 0) { 
-                const q = Math.ceil(rem); 
-                if (q !== M.ls) { 
-                    M.ls = q; 
-                    if (ac && mg) q <= 10 ? beep(q <= 3 ? 1500 : 1000, .1, .5) : osc('sine', 800, ac.currentTime, .04, .12) 
-                } 
-            } 
+        function mdraw() {
+            const pre = M.start && Date.now() < M.start;
+            $('#mtm').classList.toggle('pre', !!pre);
+            if (pre) {
+                $('#mtm').textContent = fmt((M.start - Date.now()) / 1000);
+                return
+            }
+            const rem = M.run ? Math.max(0, (M.end - Date.now()) / 1000) : M.rem;
+            $('#mtm').textContent = fmt(rem);
+            $('#mtm').classList.toggle('hot', M.run && rem <= 30);
+            $('#man').classList.toggle('tremer', M.run && rem <= 30 && rem > 0);
+            $('#man').classList.toggle('urgente', M.run && rem <= 10 && rem > 0);
+            if (M.run && M.start && rem <= 0 && M.fx !== 'boom') {
+                M.fx = 'boom'; boom(); fx('boom')
+            }
+            if (M.run && rem > 0) {
+                const q = Math.ceil(rem);
+                if (q !== M.ls) {
+                    M.ls = q;
+                    if (ac && mg) q <= 10 ? beep(q <= 3 ? 1500 : 1000, .1, .5) : osc('sine', 800, ac.currentTime, .04, .12)
+                }
+            }
         }
-        
-            function mset(d) {
+
+        function mset(d) {
             M.start = 0; if (d.idle) { M.run = false; $('#mtm').textContent = '--:--'; $('#mmod').textContent = 'Aguardando a bomba iniciar...'; return } if (M.pst !== undefined) { if (d.st > M.pst) buzz(); else if (d.left < M.pl) ding() } M.pst = d.st; M.pl = d.left; M.run = !!d.run; M.rem = d.rem; M.end = Date.now() + d.rem * 1000; $('#mj').classList.add('hide');
             $('#mdots').innerHTML = [0, 1, 2].map(i => `<div class="dot${i < d.st ? ' x' : ''}"></div>`).join('');
             $('#mmod').innerHTML = `Módulos desarmados: <b>${d.n - d.left} de ${d.n}</b>` + (d.lv ? ` | Nível ${d.lv}` : '');
@@ -1605,16 +1718,39 @@
         const MC = ['#d8343a', '#2f6fd6', '#2e9e4f', '#7b4fa3'];
         const PG = [`<div class="cov"><small>TOP SECRET</small><h2>MANUAL DE DESARME</h2><p>Só para os olhos do Macaco Mudo</p><span class="bomb">&#128163;</span></div>`, ...MAN.map(([t, rows], i) => `<h3 style="background:${MC[i]}">${t}</h3>${rows.map(r => `<div class="rl"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')}`), `<div class="cov"><h2>Boa sorte!</h2><p>Gestos claros salvam bananas.</p></div>`];
         let bk = 0;
-        $('#man').innerHTML = `<div class="book"><div class="pgs">${PG.map((p, i) => `<div class="pg" style="z-index:${PG.length - i}">${p}<em>${i + 1}/${PG.length}</em></div>`).join('')}</div></div>`;
-        function flip(d) { const n = Math.max(0, Math.min(PG.length - 1, bk + d)); if (n === bk) return; bk = n; document.querySelectorAll('.pg').forEach((p, i) => p.classList.toggle('fl', i < bk)); if (ac) noise(ac.currentTime, .15, .25, 1800) }
-        { let sx = null; const pg = $('.pgs'); pg.addEventListener('pointerdown', e => { sx = e.clientX }); pg.addEventListener('pointerup', e => { if (sx === null) return; const d = e.clientX - sx; sx = null; if (Math.abs(d) > 40) flip(d < 0 ? 1 : -1) }); pg.addEventListener('pointercancel', () => { sx = null }) }
+        $('#man').innerHTML = `<div class="book"><div class="pgs">${PG.map((p, i) => `<div class="pg" style="z-index:${PG.length - i}"><div class="pf">${p}<em>${i + 1}/${PG.length}</em></div><div class="pb"></div></div>`).join('')}</div></div>`;
+
+        const E = [...document.querySelectorAll('.pg')], N = E.length, PGS = $('.pgs'); let D = null;
+        function setAng(i, a, anim) {
+            const e = E[i]; e.style.transition = anim ? 'transform .55s cubic-bezier(.22,.8,.25,1)' : 'none'; e.style.transform = 'rotateY(' + (-a) + 'deg)'; e.style.setProperty('--sh', (Math.sin(a * Math.PI / 180) * .6).toFixed(3));
+            if (E[i + 1]) E[i + 1].style.setProperty('--sh', a > 0 && a < 180 ? (.55 * (1 - a / 180)).toFixed(3) : 0);
+            clearTimeout(e._t); if (a >= 180) e._t = setTimeout(() => { e.style.visibility = 'hidden' }, 650); else e.style.visibility = ''
+        }
+        function settle(i, flip) { setAng(i, flip ? 180 : 0, true); bk = flip ? i + 1 : i; if (ac) noise(ac.currentTime, .15, .25, 1800) }
+        PGS.addEventListener('pointerdown', e => { D = { id: e.pointerId, x: e.clientX, i: null, a: 0, v: 0, lx: e.clientX, lt: performance.now(), w: PGS.clientWidth } });
+        PGS.addEventListener('pointermove', e => {
+            if (!D || e.pointerId !== D.id) return; const dx = e.clientX - D.x, t = performance.now();
+            D.v = (e.clientX - D.lx) / Math.max(1, t - D.lt) * .6 + D.v * .4; D.lx = e.clientX; D.lt = t;
+            if (D.i === null) { if (Math.abs(dx) < 8) return; D.fw = dx < 0; if (D.fw ? bk >= N - 1 : bk < 1) { D = null; return } D.i = D.fw ? bk : bk - 1; try { PGS.setPointerCapture(e.pointerId) } catch (x) { } }
+            const p = Math.min(1, Math.max(0, (D.fw ? -dx : dx) - 8) / (D.w * .8)); D.a = D.fw ? p * 180 : 180 - p * 180;
+            if (!D.raf) D.raf = requestAnimationFrame(() => { if (D) { D.raf = 0; setAng(D.i, D.a, false) } })
+        });
+        function endDrag(e) {
+            if (!D || e.pointerId !== D.id) return; const d = D; D = null; if (d.i === null) return; cancelAnimationFrame(d.raf);
+            const fast = Math.abs(d.v) > .5; settle(d.i, d.fw ? (d.v < -.5 || (!fast && d.a > 70)) : !(d.v > .5 || (!fast && d.a < 110)))
+        }
+        PGS.addEventListener('pointerup', endDrag); PGS.addEventListener('pointercancel', endDrag);
+        function fit() { document.querySelectorAll('.pf').forEach(e => { e.style.fontSize = ''; let f = parseFloat(getComputedStyle(e).fontSize); while (e.scrollHeight > e.clientHeight + 1 && f > 9) { f -= .5; e.style.fontSize = f + 'px' } }) }
+        addEventListener('resize', () => { if (!$('#mudo').classList.contains('hide')) fit() });
+        if (document.fonts) document.fonts.ready.then(() => { if (!$('#mudo').classList.contains('hide')) fit() });
+
         $('#mset').onclick = () => $('#mj').classList.toggle('hide'); $('#mj').classList.add('ativo'); $('#mclose').onclick = () => $('#mj').classList.add('hide');
         $('#msnd').onclick = () => { A(); muted = !muted; setVol(); $('#msnd').innerHTML = '<i data-lucide="' + (muted ? 'volume-x' : 'volume-2') + '"></i>'; ic() };
         document.addEventListener('click', e0 => {
             if (!e0.target.closest('.fsbtn')) return; const d = document, e = d.documentElement, rq = e.requestFullscreen || e.webkitRequestFullscreen;
             try { if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d); else if (rq) rq.call(e); else alert('Este navegador não permite tela cheia. No iPhone, use Compartilhar > Adicionar à Tela de Início.') } catch (x) { }
         });
-        function asMudo() { $('#surdo').classList.add('hide'); $('#mudo').classList.remove('hide'); setInterval(mdraw, 250) }
+        function asMudo() { $('#surdo').classList.add('hide'); $('#mudo').classList.remove('hide'); document.documentElement.classList.add('mu-on'); fit(); setInterval(mdraw, 250) }
         $('#toMudo').onclick = () => { asMudo(); try { history.replaceState(null, '', '#mudo') } catch (e) { } };
         $('#toSurdo').onclick = () => { location.hash = ''; location.reload() };
         ic(); if (location.hash === '#mudo') asMudo();
